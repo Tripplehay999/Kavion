@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Flame, Plus, CheckCircle2, Trash2, AlertCircle, X, Trophy } from 'lucide-react'
+import { Flame, Plus, CheckCircle2, Trash2, AlertCircle, X, Trophy, Zap } from 'lucide-react'
 import { toggleHabit, addHabit, deleteHabit } from '@/app/actions/habits'
 import { actionError } from '@/lib/utils/actionError'
 import Modal, { FormField, FieldInput } from '@/components/ui/Modal'
@@ -134,8 +134,14 @@ export default function HabitsClient({
     if (!form.name.trim()) { setError('Name is required'); return }
     startTransition(async () => {
       try {
-        await addHabit(form.name.trim(), form.color)
-        setHabits(prev => [...prev, { id: `temp-${Date.now()}`, name: form.name.trim(), color: form.color, sort_order: prev.length, created_at: '' }])
+        const newHabit = await addHabit(form.name.trim(), form.color)
+        setHabits(prev => [...prev, {
+          id: newHabit.id,
+          name: newHabit.name,
+          color: newHabit.color,
+          sort_order: newHabit.sort_order ?? prev.length,
+          created_at: newHabit.created_at ?? '',
+        }])
         setForm({ name: '', color: COLORS[0] })
         setAddOpen(false)
         setError('')
@@ -187,7 +193,7 @@ export default function HabitsClient({
       )}
 
       {/* ── Stats Row ── */}
-      <div style={{ display: 'flex', gap: 14, marginBottom: 22, alignItems: 'stretch' }}>
+      <div className="habits-stats-row">
         {/* Progress Ring card */}
         <div className="card" style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 20, flex: '0 0 auto' }}>
           <ProgressRing done={totalDone} total={totalHabits} />
@@ -208,7 +214,7 @@ export default function HabitsClient({
 
         {/* Side stat cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, flex: 1 }}>
+          <div className="grid-cols-3" style={{ flex: 1 }}>
             {[
               { label: 'Current Streak', value: `${streak}d`, sub: 'Consecutive days', color: '#F97316', icon: <Flame size={16} color="#F97316" /> },
               { label: 'Best Streak',    value: `${longestStreak}d`, sub: 'Any single habit', color: '#FBBF24', icon: <Trophy size={16} color="#FBBF24" /> },
@@ -377,6 +383,20 @@ export default function HabitsClient({
             })}
           </div>
         )}
+      </div>
+
+      {/* ── AI Coach (Coming Soon) ── */}
+      <div className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14, opacity: 0.6, marginTop: 16 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(124,58,237,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Zap size={15} color="#A78BFA" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)' }}>AI Coach</span>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 10 }}>Analyze your 28-day history and get personalized habit advice</span>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: 'rgba(124,58,237,0.1)', color: '#A78BFA', border: '1px solid rgba(124,58,237,0.2)', flexShrink: 0 }}>
+          Coming Soon
+        </span>
       </div>
 
       {/* ── Add Habit Modal ── */}

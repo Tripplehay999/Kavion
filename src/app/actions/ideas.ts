@@ -37,14 +37,19 @@ export async function getIdeas() {
 export async function addIdea(input: {
   title: string; description?: string; score?: number; status?: string; tags?: string[]
 }) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to save ideas')
+  if (!isConfigured()) throw new Error('Configure Supabase to save ideas')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
-    const { error } = await supabase.from('ideas').insert({ user_id: user.id, ...input })
+    const { data, error } = await supabase
+      .from('ideas')
+      .insert({ user_id: user.id, ...input })
+      .select()
+      .single()
     if (error) throw new Error(error.message)
     revalidatePath('/ideas')
+    return data as { id: string; title: string; description?: string; score: number; status: string; tags: string[]; created_at: string }
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to add idea')
   }
@@ -53,7 +58,7 @@ export async function addIdea(input: {
 export async function updateIdea(id: string, input: {
   title?: string; description?: string; score?: number; status?: string; tags?: string[]
 }) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to update ideas')
+  if (!isConfigured()) throw new Error('Configure Supabase to update ideas')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -67,7 +72,7 @@ export async function updateIdea(id: string, input: {
 }
 
 export async function deleteIdea(id: string) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to delete ideas')
+  if (!isConfigured()) throw new Error('Configure Supabase to delete ideas')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

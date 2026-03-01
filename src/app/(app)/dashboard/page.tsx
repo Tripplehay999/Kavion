@@ -69,7 +69,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Stats Row (clickable) ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 22 }}>
+      <div className="grid-cols-4" style={{ marginBottom: 22 }}>
         {stats.map((s) => (
           <Link key={s.label} href={s.href} style={{ textDecoration: 'none' }}>
             <div className="card stat-card" style={{ cursor: 'pointer' }}>
@@ -92,7 +92,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Main Grid ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div className="grid-cols-2" style={{ marginBottom: 16 }}>
 
         {/* Recent Projects */}
         <div className="card" style={{ overflow: 'hidden' }}>

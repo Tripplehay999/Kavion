@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Plus, Pencil, Trash2, AlertCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, AlertCircle, Zap } from 'lucide-react'
 import Modal, { FormField, FieldInput, FieldTextarea } from '@/components/ui/Modal'
 import { addIdea, updateIdea, deleteIdea } from '@/app/actions/ideas'
 import { actionError } from '@/lib/utils/actionError'
@@ -98,8 +98,8 @@ export default function IdeasClient({
           setIdeas(prev => [...prev.map(i => i.id === editTarget.id ? { ...i, ...payload } : i)].sort((a, b) => b.score - a.score))
           setEditTarget(null)
         } else {
-          await addIdea(payload)
-          setIdeas(prev => [{ id: `temp-${Date.now()}`, created_at: 'just now', ...payload }, ...prev].sort((a, b) => b.score - a.score))
+          const newIdea = await addIdea(payload)
+          setIdeas(prev => [newIdea, ...prev].sort((a, b) => b.score - a.score))
           setAddOpen(false)
         }
         setError('')
@@ -153,7 +153,7 @@ export default function IdeasClient({
       </div>
 
       {/* ── Stats ── */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 22 }}>
+      <div className="ideas-stats">
         {stats.map((s) => (
           <div key={s.label} className="card" style={{ padding: '14px 18px', flex: 1 }}>
             <div className="num" style={{ fontSize: 26, fontWeight: 700, color: s.color, letterSpacing: '-0.04em', marginBottom: 3 }}>{s.value}</div>
@@ -168,7 +168,7 @@ export default function IdeasClient({
           No ideas yet — click <strong style={{ color: 'var(--text-secondary)' }}>New Idea</strong> to capture your first one.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        <div className="grid-cols-3" style={{ gap: 12 }}>
           {ideas.map((idea) => {
             const sc = statusCfg(idea.status)
             const sColor = scoreColor(idea.score)
@@ -244,6 +244,20 @@ export default function IdeasClient({
           })}
         </div>
       )}
+
+      {/* ── AI Suggestions (Coming Soon) ── */}
+      <div className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14, opacity: 0.6, marginTop: 4 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(245,158,11,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Zap size={15} color="#FBBF24" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <span style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)' }}>AI Suggestions</span>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 10 }}>New idea suggestions and improvements based on your vault</span>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: 'rgba(245,158,11,0.1)', color: '#FBBF24', border: '1px solid rgba(245,158,11,0.2)', flexShrink: 0 }}>
+          Coming Soon
+        </span>
+      </div>
 
       {/* ── Add / Edit Modal ── */}
       {modal && (

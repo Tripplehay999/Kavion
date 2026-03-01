@@ -42,6 +42,8 @@ export default function Modal({ open, onClose, title, children, width = 480 }: M
         ref={panelRef}
         style={{
           width: '100%', maxWidth: width,
+          maxHeight: 'calc(100dvh - 40px)',
+          display: 'flex', flexDirection: 'column',
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-hover)',
           borderRadius: 16,
@@ -75,7 +77,7 @@ export default function Modal({ open, onClose, title, children, width = 480 }: M
         </div>
 
         {/* Body */}
-        <div style={{ padding: '22px' }}>
+        <div style={{ padding: '22px', overflowY: 'auto', flex: 1 }}>
           {children}
         </div>
       </div>

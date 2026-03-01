@@ -17,6 +17,7 @@ import {
   Zap,
   LogOut,
   Loader2,
+  X,
 } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 
@@ -32,14 +33,22 @@ const NAV = [
   { href: '/youtube',      icon: Youtube,         label: 'YouTube',      color: '#EF4444', count: null },
 ]
 
-export default function Sidebar({ userEmail }: { userEmail: string }) {
+export default function Sidebar({
+  userEmail,
+  mobileOpen = false,
+  onMobileClose,
+}: {
+  userEmail: string
+  mobileOpen?: boolean
+  onMobileClose?: () => void
+}) {
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
 
   const initial = userEmail ? userEmail[0].toUpperCase() : 'U'
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
       {/* ── Logo ── */}
       <div style={{
         padding: '20px 14px 14px',
@@ -68,9 +77,13 @@ export default function Sidebar({ userEmail }: { userEmail: string }) {
           fontWeight: 600,
           letterSpacing: '0.08em',
           color: 'var(--text-primary)',
+          flex: 1,
         }}>
           KAVION
         </span>
+        <button className="sidebar-close-btn" onClick={onMobileClose} aria-label="Close menu">
+          <X size={16} />
+        </button>
       </div>
 
       {/* ── Nav ── */}

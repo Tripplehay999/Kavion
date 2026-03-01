@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { CheckCircle2, AlertCircle, Key, Youtube, CreditCard, Eye, EyeOff, Loader2, Github } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Key, Youtube, CreditCard, Eye, EyeOff, Loader2, Github, Zap } from 'lucide-react'
 import { saveSettings } from '@/app/actions/settings'
 import { disconnectGithub } from '@/app/actions/github'
 
@@ -72,10 +72,14 @@ export default function SettingsClient({ savedSettings, githubConnected, githubU
     GITHUB_CLIENT_ID:     savedSettings.GITHUB_CLIENT_ID     ?? '',
     GITHUB_CLIENT_SECRET: savedSettings.GITHUB_CLIENT_SECRET ?? '',
   })
+  const [ai, setAi] = useState({
+    GEMINI_API_KEY: savedSettings.GEMINI_API_KEY ?? '',
+  })
 
   const [ytSaved,  setYtSaved]  = useState(false)
   const [strSaved, setStrSaved] = useState(false)
   const [ghSaved,  setGhSaved]  = useState(false)
+  const [aiSaved,  setAiSaved]  = useState(false)
   const [error,    setError]    = useState('')
   const [isPending, startTransition] = useTransition()
   const [ghDisconnecting, startGhDisconnect] = useTransition()
@@ -97,6 +101,7 @@ export default function SettingsClient({ savedSettings, githubConnected, githubU
 
   const ytConfigured  = !!(savedSettings.YOUTUBE_API_KEY && savedSettings.YOUTUBE_CHANNEL_ID)
   const strConfigured = !!savedSettings.STRIPE_SECRET_KEY
+  const aiConfigured  = !!savedSettings.GEMINI_API_KEY
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -300,6 +305,20 @@ export default function SettingsClient({ savedSettings, githubConnected, githubU
             <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4 }}>http://localhost:3000/api/github/callback</code>
           </p>
         </div>
+      </div>
+
+      {/* ── AI Coach (Coming Soon) ── */}
+      <div className="card" style={{ padding: '18px 24px', display: 'flex', alignItems: 'center', gap: 14, opacity: 0.5 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(124,58,237,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Zap size={16} color="#A78BFA" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>AI Coach</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Habit insights + idea suggestions powered by Gemini</div>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 9px', borderRadius: 99, background: 'rgba(124,58,237,0.1)', color: '#A78BFA', border: '1px solid rgba(124,58,237,0.2)', flexShrink: 0 }}>
+          Coming Soon
+        </span>
       </div>
 
     </div>

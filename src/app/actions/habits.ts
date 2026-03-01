@@ -65,7 +65,7 @@ export async function getAllHabitsWithLogs(days = 28) {
 }
 
 export async function toggleHabit(habitId: string) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to track habits')
+  if (!isConfigured()) throw new Error('Configure Supabase to track habits')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -93,22 +93,27 @@ export async function toggleHabit(habitId: string) {
 }
 
 export async function addHabit(name: string, color = '#EC4899') {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to add habits')
+  if (!isConfigured()) throw new Error('Configure Supabase to add habits')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
-    const { error } = await supabase.from('habits').insert({ user_id: user.id, name, color })
+    const { data, error } = await supabase
+      .from('habits')
+      .insert({ user_id: user.id, name, color })
+      .select()
+      .single()
     if (error) throw new Error(error.message)
     revalidatePath('/habits')
     revalidatePath('/dashboard')
+    return data as { id: string; name: string; color: string; sort_order: number; created_at: string }
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to add habit')
   }
 }
 
 export async function deleteHabit(id: string) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to delete habits')
+  if (!isConfigured()) throw new Error('Configure Supabase to delete habits')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
