@@ -4,6 +4,7 @@ import { useState, useTransition, useMemo } from 'react'
 import { Plus, Copy, Check, Trash2, Search, AlertCircle, X } from 'lucide-react'
 import Modal, { FormField, FieldInput, FieldSelect, FieldTextarea } from '@/components/ui/Modal'
 import { addSnippet, deleteSnippet } from '@/app/actions/snippets'
+import { actionError } from '@/lib/utils/actionError'
 
 interface Snippet {
   id: string
@@ -86,7 +87,7 @@ export default function SnippetsClient({
         setAddOpen(false)
         setError('')
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to add snippet')
+        setError(actionError(e, 'Failed to add snippet'))
       }
     })
   }
@@ -98,7 +99,7 @@ export default function SnippetsClient({
         setSnippets(prev => prev.filter(s => s.id !== id))
         setDeleteId(null)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Delete failed')
+        setError(actionError(e, 'Delete failed — please try again'))
       }
     })
   }
@@ -111,7 +112,7 @@ export default function SnippetsClient({
           {!isLive && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: '#FBBF24', background: 'rgba(251,191,36,0.07)', border: '1px solid rgba(251,191,36,0.2)', padding: '5px 12px', borderRadius: 8 }}>
               <AlertCircle size={12} />
-              Demo data — add Supabase credentials to .env.local
+              Demo data — configure Supabase in Settings
             </div>
           )}
         </div>

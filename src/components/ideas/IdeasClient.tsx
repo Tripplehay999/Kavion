@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { Plus, Pencil, Trash2, AlertCircle } from 'lucide-react'
 import Modal, { FormField, FieldInput, FieldTextarea } from '@/components/ui/Modal'
 import { addIdea, updateIdea, deleteIdea } from '@/app/actions/ideas'
+import { actionError } from '@/lib/utils/actionError'
 
 type IdeaStatus = 'exploring' | 'building' | 'launched' | 'shelved' | 'validated'
 
@@ -103,7 +104,7 @@ export default function IdeasClient({
         }
         setError('')
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Something went wrong')
+        setError(actionError(e))
       }
     })
   }
@@ -115,7 +116,7 @@ export default function IdeasClient({
         setIdeas(prev => prev.filter(i => i.id !== id))
         setDeleteId(null)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Delete failed')
+        setError(actionError(e, 'Delete failed — please try again'))
       }
     })
   }

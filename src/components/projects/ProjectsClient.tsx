@@ -4,6 +4,7 @@ import { useState, useTransition, useEffect } from 'react'
 import { Plus, Pencil, Trash2, ExternalLink, AlertCircle, Github, Star, GitFork, CircleDot, Clock } from 'lucide-react'
 import Modal, { FormField, FieldInput, FieldSelect, FieldTextarea } from '@/components/ui/Modal'
 import { addProject, updateProject, deleteProject } from '@/app/actions/projects'
+import { actionError } from '@/lib/utils/actionError'
 import GithubImportModal from '@/components/projects/GithubImportModal'
 import type { GithubRepo } from '@/app/actions/github'
 
@@ -133,7 +134,7 @@ export default function ProjectsClient({
           setAddOpen(false)
         }
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Something went wrong')
+        setError(actionError(e))
       }
     })
   }
@@ -145,7 +146,7 @@ export default function ProjectsClient({
         setProjects(prev => prev.filter(p => p.id !== id))
         setDeleteId(null)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Delete failed')
+        setError(actionError(e, 'Delete failed — please try again'))
       }
     })
   }
@@ -162,7 +163,7 @@ export default function ProjectsClient({
           {!isLive && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, color: '#FBBF24', background: 'rgba(251,191,36,0.07)', border: '1px solid rgba(251,191,36,0.2)', padding: '5px 12px', borderRadius: 8 }}>
               <AlertCircle size={12} />
-              Demo data — add Supabase credentials to .env.local to use live data
+              Demo data — configure Supabase in Settings to use live data
             </div>
           )}
         </div>

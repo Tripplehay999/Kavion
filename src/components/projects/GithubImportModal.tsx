@@ -56,21 +56,38 @@ export default function GithubImportModal({ open, onClose, githubConnected, onIm
 
   const handleImport = () => {
     const toImport = repos.filter(r => selected.has(r.id))
+    setError('')
     startImport(async () => {
-      await Promise.all(toImport.map(r =>
-        addProject({
-          name: r.name,
-          description: r.description || undefined,
-          status: 'active',
-          priority: 'medium',
-          progress: 0,
-          stack: r.language ? [r.language] : [],
-          color: '#3B82F6',
-          github_repo: r.html_url,
-        })
-      ))
-      onImported(toImport)
-      onClose()
+      try {
+        const results = await Promise.allSettled(toImport.map(r =>
+          addProject({
+            name: r.name,
+            description: r.description || undefined,
+            status: 'active',
+            priority: 'medium',
+            progress: 0,
+            stack: r.language ? [r.language] : [],
+            color: '#3B82F6',
+            github_repo: r.html_url,
+          })
+        ))
+        const failed = results.filter(r => r.status === 'rejected')
+        if (failed.length === toImport.length) {
+          const msg = (failed[0] as PromiseRejectedResult).reason?.message ?? 'Import failed'
+          // If the column doesn't exist yet, give a clear message
+          setError(
+            msg.includes('github_repo') || msg.includes('column')
+              ? 'Database needs updating. Run this in your Supabase SQL Editor: ALTER TABLE projects ADD COLUMN IF NOT EXISTS github_repo text;'
+              : msg
+          )
+          return
+        }
+        const succeeded = toImport.filter((_, i) => results[i].status === 'fulfilled')
+        onImported(succeeded)
+        onClose()
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Import failed — please try again')
+      }
     })
   }
 
@@ -90,8 +107,8 @@ export default function GithubImportModal({ open, onClose, githubConnected, onIm
             <Github size={14} /> Sign in with GitHub
           </a>
           <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 14, lineHeight: 1.6 }}>
-            Requires <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4 }}>GITHUB_CLIENT_ID</code> and <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4 }}>GITHUB_CLIENT_SECRET</code> in <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4 }}>.env.local</code>.{' '}
-            <a href="/settings" style={{ color: '#A78BFA' }}>Set up in Settings →</a>
+            Set up your GitHub OAuth credentials in{' '}
+            <a href="/settings" style={{ color: '#A78BFA' }}>Settings →</a>
           </p>
         </div>
       )}

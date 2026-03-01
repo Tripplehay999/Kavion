@@ -4,14 +4,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Zap, Mail, Lock, ArrowRight, Loader2, AlertTriangle } from 'lucide-react'
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-const IS_CONFIGURED = SUPABASE_URL.length > 0 && !SUPABASE_URL.includes('your-project-id')
+import { Zap, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
 
 function friendlyError(msg: string): string {
   if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
-    return 'Cannot reach Supabase — check your NEXT_PUBLIC_SUPABASE_URL in .env.local and restart the dev server.'
+    return 'Cannot reach the server. Please try again in a moment.'
   }
   if (msg.toLowerCase().includes('invalid login credentials')) {
     return 'Wrong email or password.'
@@ -74,25 +71,6 @@ export default function LoginPage() {
             Sign in to your command center
           </p>
         </div>
-
-        {/* Not configured warning */}
-        {!IS_CONFIGURED && (
-          <div style={{ padding: '14px 16px', borderRadius: 10, marginBottom: 20, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
-            <div style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <AlertTriangle size={15} color="#FBBF24" style={{ flexShrink: 0, marginTop: 1 }} />
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#FBBF24', marginBottom: 6 }}>Supabase not configured</div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-                  Add your credentials to <code style={{ background: 'rgba(255,255,255,0.07)', padding: '1px 5px', borderRadius: 4 }}>.env.local</code> and restart the dev server:
-                </div>
-                <pre style={{ margin: '8px 0 0', padding: '9px 12px', background: 'rgba(0,0,0,0.3)', borderRadius: 7, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#A78BFA', lineHeight: 1.7, overflow: 'auto' }}>
-{`NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...`}
-                </pre>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Error */}
         {error && (

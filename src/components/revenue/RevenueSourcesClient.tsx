@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { Plus, Pencil, Trash2, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react'
 import Modal, { FormField, FieldInput, FieldSelect } from '@/components/ui/Modal'
 import { addRevenueSource, updateRevenueSource, deleteRevenueSource, logMonthlyMrr } from '@/app/actions/revenue'
+import { actionError } from '@/lib/utils/actionError'
 
 interface Source {
   id: string
@@ -68,7 +69,7 @@ export default function RevenueSourcesClient({
         }
         setError('')
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Something went wrong')
+        setError(actionError(e))
       }
     })
   }
@@ -80,7 +81,7 @@ export default function RevenueSourcesClient({
         setSources(prev => prev.filter(s => s.id !== id))
         setDeleteId(null)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Delete failed')
+        setError(actionError(e, 'Delete failed — please try again'))
       }
     })
   }
@@ -93,7 +94,7 @@ export default function RevenueSourcesClient({
         setLogOpen(false)
         setLogMrr('')
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to log MRR')
+        setError(actionError(e, 'Failed to log MRR'))
       }
     })
   }

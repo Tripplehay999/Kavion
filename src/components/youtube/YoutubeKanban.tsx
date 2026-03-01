@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef } from 'react'
 import { Plus, GripVertical, Eye, X, AlertCircle, Loader2, Trash2 } from 'lucide-react'
 import { updateVideoStage, addYouTubeVideo, deleteYouTubeVideo } from '@/app/actions/youtube'
+import { actionError } from '@/lib/utils/actionError'
 import Modal, { FormField, FieldInput, FieldTextarea } from '@/components/ui/Modal'
 
 type Stage = 'idea' | 'scripting' | 'recording' | 'editing' | 'scheduled' | 'published'
@@ -79,7 +80,6 @@ export default function YoutubeKanban({
 
   const handleAdd = () => {
     if (!form.title.trim()) { setFormError('Title is required'); return }
-    if (!isLive) { setFormError('Supabase not configured'); return }
     startTransition(async () => {
       try {
         await addYouTubeVideo({ title: form.title.trim(), stage: form.stage, description: form.description || undefined })
@@ -95,7 +95,7 @@ export default function YoutubeKanban({
         setAddOpen(false)
         setFormError('')
       } catch (e) {
-        setFormError(e instanceof Error ? e.message : 'Failed to add')
+        setFormError(actionError(e, 'Failed to add video'))
       }
     })
   }
@@ -108,7 +108,7 @@ export default function YoutubeKanban({
         setVideos(prev => prev.filter(v => v.id !== id))
         setDeleteId(null)
       } catch (e) {
-        setFormError(e instanceof Error ? e.message : 'Delete failed')
+        setFormError(actionError(e, 'Delete failed — please try again'))
       }
     })
   }

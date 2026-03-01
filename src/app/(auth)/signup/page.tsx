@@ -4,10 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Zap, Mail, Lock, User, ArrowRight, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react'
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-const IS_CONFIGURED = SUPABASE_URL.length > 0 && !SUPABASE_URL.includes('your-project-id')
+import { Zap, Mail, Lock, User, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react'
 
 export default function SignupPage() {
   const [name, setName]         = useState('')
@@ -110,21 +107,6 @@ export default function SignupPage() {
             Set up your personal command center
           </p>
         </div>
-
-        {/* Not configured warning */}
-        {!IS_CONFIGURED && (
-          <div style={{ padding: '14px 16px', borderRadius: 10, marginBottom: 20, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
-            <div style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
-              <AlertTriangle size={15} color="#FBBF24" style={{ flexShrink: 0, marginTop: 1 }} />
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#FBBF24', marginBottom: 4 }}>Supabase not configured</div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-                  Add credentials to <code style={{ background: 'rgba(255,255,255,0.07)', padding: '1px 5px', borderRadius: 4 }}>.env.local</code> and restart the dev server.
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Error */}
         {error && (

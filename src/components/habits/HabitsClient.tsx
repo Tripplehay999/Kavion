@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { Flame, Plus, CheckCircle2, Trash2, AlertCircle, X, Trophy } from 'lucide-react'
 import { toggleHabit, addHabit, deleteHabit } from '@/app/actions/habits'
+import { actionError } from '@/lib/utils/actionError'
 import Modal, { FormField, FieldInput } from '@/components/ui/Modal'
 
 interface Habit {
@@ -139,7 +140,7 @@ export default function HabitsClient({
         setAddOpen(false)
         setError('')
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to add habit')
+        setError(actionError(e, 'Failed to add habit'))
       }
     })
   }
@@ -151,7 +152,7 @@ export default function HabitsClient({
         setHabits(prev => prev.filter(h => h.id !== id))
         setDeleteId(null)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Delete failed')
+        setError(actionError(e, 'Delete failed — please try again'))
       }
     })
   }

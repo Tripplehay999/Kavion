@@ -294,7 +294,9 @@ export default function SettingsClient({ savedSettings, githubConnected, githubU
           </div>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
             <a href="https://github.com/settings/developers" target="_blank" rel="noreferrer" style={{ color: '#A78BFA' }}>Create a GitHub OAuth App</a>
-            {' '}and set the callback URL to{' '}
+            {' '}and add these as authorized callback URLs:{' '}
+            <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4 }}>https://kavion.app/api/github/callback</code>
+            {' '}and{' '}
             <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4 }}>http://localhost:3000/api/github/callback</code>
           </p>
         </div>
