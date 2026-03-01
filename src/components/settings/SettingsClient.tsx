@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { CheckCircle2, AlertCircle, Key, Youtube, CreditCard, Database, Eye, EyeOff, Loader2, Github } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Key, Youtube, CreditCard, Eye, EyeOff, Loader2, Github } from 'lucide-react'
 import { saveSettings } from '@/app/actions/settings'
 import { disconnectGithub } from '@/app/actions/github'
 
 interface Props {
   savedSettings: Record<string, string>
-  supabaseConfigured: boolean
-  supabaseUrl: string
   githubConnected: boolean
   githubUsername: string | null
   githubAvatarUrl: string | null
@@ -33,12 +31,10 @@ function MaskedInput({
   value,
   onChange,
   placeholder,
-  disabled,
 }: {
   value: string
   onChange: (v: string) => void
   placeholder: string
-  disabled?: boolean
 }) {
   const [show, setShow] = useState(false)
   return (
@@ -48,9 +44,8 @@ function MaskedInput({
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        disabled={disabled}
         className="field-input"
-        style={{ width: '100%', paddingRight: 38, boxSizing: 'border-box', opacity: disabled ? 0.5 : 1 }}
+        style={{ width: '100%', paddingRight: 38, boxSizing: 'border-box' }}
         autoComplete="off"
         spellCheck={false}
       />
@@ -65,7 +60,7 @@ function MaskedInput({
   )
 }
 
-export default function SettingsClient({ savedSettings, supabaseConfigured, supabaseUrl, githubConnected, githubUsername, githubAvatarUrl }: Props) {
+export default function SettingsClient({ savedSettings, githubConnected, githubUsername, githubAvatarUrl }: Props) {
   const [youtube, setYoutube] = useState({
     YOUTUBE_API_KEY:    savedSettings.YOUTUBE_API_KEY    ?? '',
     YOUTUBE_CHANNEL_ID: savedSettings.YOUTUBE_CHANNEL_ID ?? '',
@@ -112,45 +107,6 @@ export default function SettingsClient({ savedSettings, supabaseConfigured, supa
         </div>
       )}
 
-      {/* ── Supabase ── */}
-      <div className="card" style={{ padding: '22px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(62,207,142,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Database size={16} color="#3ECF8E" />
-            </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>Supabase</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Database + Auth</div>
-            </div>
-          </div>
-          <StatusBadge active={supabaseConfigured} label={supabaseConfigured ? 'Connected' : 'Not configured'} />
-        </div>
-
-        {supabaseConfigured ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <CheckCircle2 size={14} color="#22C55E" />
-              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                Connected to <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-primary)', fontSize: 12 }}>{supabaseUrl}</span>
-              </span>
-            </div>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6, margin: 0 }}>
-              Supabase credentials are set via <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: 4 }}>.env.local</code>. Run <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: 4 }}>supabase/schema.sql</code> in the Supabase SQL Editor to create all tables.
-            </p>
-          </div>
-        ) : (
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-            Add these to <code style={{ background: 'rgba(255,255,255,0.06)', padding: '1px 6px', borderRadius: 4 }}>.env.local</code> in your project root:
-            <pre style={{ marginTop: 10, padding: '10px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, fontSize: 12, fontFamily: 'var(--font-mono)', color: '#A78BFA', overflow: 'auto' }}>
-{`NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
-            </pre>
-          </div>
-        )}
-      </div>
-
       {/* ── YouTube ── */}
       <div className="card" style={{ padding: '22px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18 }}>
@@ -173,7 +129,6 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               value={youtube.YOUTUBE_API_KEY}
               onChange={v => setYoutube(p => ({ ...p, YOUTUBE_API_KEY: v }))}
               placeholder="AIza..."
-              disabled={!supabaseConfigured}
             />
           </div>
           <div>
@@ -183,9 +138,8 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               value={youtube.YOUTUBE_CHANNEL_ID}
               onChange={e => setYoutube(p => ({ ...p, YOUTUBE_CHANNEL_ID: e.target.value }))}
               placeholder="UCxxxxxxxxxxxxxxx"
-              disabled={!supabaseConfigured}
               className="field-input"
-              style={{ width: '100%', boxSizing: 'border-box', opacity: supabaseConfigured ? 1 : 0.5 }}
+              style={{ width: '100%', boxSizing: 'border-box' }}
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
@@ -193,7 +147,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               className="btn btn-primary"
               style={{ fontSize: 13 }}
               onClick={() => save(youtube, () => setYtSaved(true))}
-              disabled={isPending || !supabaseConfigured}
+              disabled={isPending}
             >
               {isPending ? <Loader2 size={13} className="spin" /> : <Key size={13} />}
               Save YouTube Keys
@@ -202,9 +156,6 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               <span style={{ fontSize: 12, color: '#22C55E', display: 'flex', alignItems: 'center', gap: 5 }}>
                 <CheckCircle2 size={13} /> Saved — refresh the YouTube page to see live data
               </span>
-            )}
-            {!supabaseConfigured && (
-              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Configure Supabase first</span>
             )}
           </div>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
@@ -235,7 +186,6 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               value={stripe.STRIPE_SECRET_KEY}
               onChange={v => setStripe(p => ({ ...p, STRIPE_SECRET_KEY: v }))}
               placeholder="sk_live_..."
-              disabled={!supabaseConfigured}
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
@@ -243,7 +193,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               className="btn btn-primary"
               style={{ fontSize: 13 }}
               onClick={() => save(stripe, () => setStrSaved(true))}
-              disabled={isPending || !supabaseConfigured}
+              disabled={isPending}
             >
               {isPending ? <Loader2 size={13} className="spin" /> : <Key size={13} />}
               Save Stripe Key
@@ -310,9 +260,8 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               value={github.GITHUB_CLIENT_ID}
               onChange={e => setGithub(p => ({ ...p, GITHUB_CLIENT_ID: e.target.value }))}
               placeholder="Ov23lixxxxxxxxxxxxxxxxxx"
-              disabled={!supabaseConfigured}
               className="field-input"
-              style={{ width: '100%', boxSizing: 'border-box', opacity: supabaseConfigured ? 1 : 0.5 }}
+              style={{ width: '100%', boxSizing: 'border-box' }}
             />
           </div>
           <div>
@@ -321,14 +270,13 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
               value={github.GITHUB_CLIENT_SECRET}
               onChange={v => setGithub(p => ({ ...p, GITHUB_CLIENT_SECRET: v }))}
               placeholder="your_client_secret"
-              disabled={!supabaseConfigured}
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => save(github, () => setGhSaved(true))}
-              disabled={isPending || !supabaseConfigured}
+              disabled={isPending}
             >
               {isPending ? <Loader2 size={13} className="spin" /> : <Key size={13} />}
               Save OAuth Credentials

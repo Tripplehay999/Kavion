@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTransition } from 'react'
 import {
   LayoutDashboard,
   FolderKanban,
@@ -14,7 +15,10 @@ import {
   Youtube,
   Settings,
   Zap,
+  LogOut,
+  Loader2,
 } from 'lucide-react'
+import { logout } from '@/app/actions/auth'
 
 const NAV = [
   { href: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard',    color: '#7C3AED', count: null },
@@ -28,8 +32,11 @@ const NAV = [
   { href: '/youtube',      icon: Youtube,         label: 'YouTube',      color: '#EF4444', count: null },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ userEmail }: { userEmail: string }) {
   const pathname = usePathname()
+  const [isPending, startTransition] = useTransition()
+
+  const initial = userEmail ? userEmail[0].toUpperCase() : 'U'
 
   return (
     <aside className="sidebar">
@@ -114,13 +121,11 @@ export default function Sidebar() {
           display: 'flex',
           alignItems: 'center',
           gap: 9,
-          padding: '8px 12px',
+          padding: '8px 10px',
           marginTop: 4,
           borderRadius: 9,
           background: 'rgba(255,255,255,0.022)',
           border: '1px solid var(--border)',
-          cursor: 'pointer',
-          transition: 'background 150ms',
         }}>
           <div style={{
             width: 26,
@@ -135,11 +140,11 @@ export default function Sidebar() {
             color: '#fff',
             flexShrink: 0,
           }}>
-            K
+            {initial}
           </div>
-          <div style={{ overflow: 'hidden' }}>
+          <div style={{ flex: 1, overflow: 'hidden' }}>
             <div style={{
-              fontSize: 12.5,
+              fontSize: 11.5,
               fontWeight: 500,
               color: 'var(--text-primary)',
               lineHeight: 1.3,
@@ -147,12 +152,30 @@ export default function Sidebar() {
               overflow: 'hidden',
               textOverflow: 'ellipsis',
             }}>
-              Kavion
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.3 }}>
-              Personal OS
+              {userEmail || 'Personal OS'}
             </div>
           </div>
+          <button
+            onClick={() => startTransition(async () => { await logout() })}
+            disabled={isPending}
+            title="Log out"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: isPending ? 'not-allowed' : 'pointer',
+              padding: 4,
+              color: 'var(--text-muted)',
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: 5,
+              transition: 'color 150ms',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#F87171' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)' }}
+          >
+            {isPending ? <Loader2 size={13} className="spin" /> : <LogOut size={13} />}
+          </button>
         </div>
       </div>
     </aside>

@@ -9,13 +9,6 @@ export default async function SettingsPage() {
     getGithubStatus(),
   ])
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-  const supabaseConfigured = supabaseUrl.length > 0 && !supabaseUrl.includes('your-project-id')
-
-  const displayUrl = supabaseConfigured
-    ? supabaseUrl.replace('https://', '').replace('.supabase.co', '') + '.supabase.co'
-    : ''
-
   return (
     <div className="page-scroll">
 
@@ -29,15 +22,13 @@ export default async function SettingsPage() {
             Integrations
           </h1>
           <p style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}>
-            Connect your APIs. Keys are stored securely in your Supabase database.
+            Connect your APIs. Keys are stored securely in your account.
           </p>
         </div>
       </div>
 
       <SettingsClient
         savedSettings={savedSettings}
-        supabaseConfigured={supabaseConfigured}
-        supabaseUrl={displayUrl}
         githubConnected={githubStatus.connected}
         githubUsername={githubStatus.username}
         githubAvatarUrl={githubStatus.avatarUrl}
