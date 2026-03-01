@@ -35,17 +35,22 @@ const NAV = [
 
 export default function Sidebar({
   userEmail,
+  displayName,
+  avatarColor = '#7C3AED',
   mobileOpen = false,
   onMobileClose,
 }: {
   userEmail: string
+  displayName?: string | null
+  avatarColor?: string
   mobileOpen?: boolean
   onMobileClose?: () => void
 }) {
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
 
-  const initial = userEmail ? userEmail[0].toUpperCase() : 'U'
+  const label   = displayName?.trim() || userEmail || 'Personal OS'
+  const initial = label[0]?.toUpperCase() ?? 'U'
 
   return (
     <aside className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
@@ -140,34 +145,36 @@ export default function Sidebar({
           background: 'rgba(255,255,255,0.022)',
           border: '1px solid var(--border)',
         }}>
-          <div style={{
-            width: 26,
-            height: 26,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #7C3AED 0%, #22D3EE 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 11,
-            fontWeight: 700,
-            color: '#fff',
-            flexShrink: 0,
-          }}>
-            {initial}
-          </div>
-          <div style={{ flex: 1, overflow: 'hidden' }}>
+          <Link href="/profile" title="Edit profile" style={{ display: 'flex', alignItems: 'center', gap: 9, flex: 1, minWidth: 0, textDecoration: 'none' }}>
             <div style={{
-              fontSize: 11.5,
-              fontWeight: 500,
-              color: 'var(--text-primary)',
-              lineHeight: 1.3,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              width: 26,
+              height: 26,
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, ${avatarColor} 0%, ${avatarColor}99 100%)`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 11,
+              fontWeight: 700,
+              color: '#fff',
+              flexShrink: 0,
             }}>
-              {userEmail || 'Personal OS'}
+              {initial}
             </div>
-          </div>
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <div style={{
+                fontSize: 11.5,
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                lineHeight: 1.3,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {label}
+              </div>
+            </div>
+          </Link>
           <button
             onClick={() => startTransition(async () => { await logout() })}
             disabled={isPending}

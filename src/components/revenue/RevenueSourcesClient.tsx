@@ -135,6 +135,7 @@ export default function RevenueSourcesClient({
           No revenue sources yet.
         </div>
       ) : (
+        <div className="table-scroll">
         <table className="data-table">
           <thead>
             <tr>
@@ -181,6 +182,7 @@ export default function RevenueSourcesClient({
             ))}
           </tbody>
         </table>
+        </div>
       )}
 
       {/* ── Add / Edit Modal ── */}

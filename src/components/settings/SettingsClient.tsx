@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { CheckCircle2, AlertCircle, Key, Youtube, CreditCard, Eye, EyeOff, Loader2, Github, Zap } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Key, Youtube, CreditCard, Eye, EyeOff, Loader2, Github, Zap, ShieldAlert } from 'lucide-react'
 import { saveSettings } from '@/app/actions/settings'
 import { disconnectGithub } from '@/app/actions/github'
 
@@ -111,6 +111,12 @@ export default function SettingsClient({ savedSettings, githubConnected, githubU
           <AlertCircle size={14} style={{ flexShrink: 0 }} /> {error}
         </div>
       )}
+
+      {/* ── Security notice ── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 14px', background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 10, fontSize: 12, color: '#FCD34D', lineHeight: 1.55 }}>
+        <ShieldAlert size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+        <span>API keys are stored encrypted in your Supabase database. Only save keys you trust this instance with. Never share your account with untrusted users.</span>
+      </div>
 
       {/* ── YouTube ── */}
       <div className="card" style={{ padding: '22px 24px' }}>

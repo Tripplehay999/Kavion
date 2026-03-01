@@ -60,7 +60,7 @@ export default function AcquisitionsPage() {
       </div>
 
       {/* ── Stats ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 22 }}>
+      <div className="grid-cols-4" style={{ marginBottom: 22 }}>
         {[
           { label: 'Watching',       value: String(watching),                          color: '#60A5FA' },
           { label: 'In Pipeline',    value: String(pipeline),                          color: '#FBBF24' },
@@ -75,11 +75,12 @@ export default function AcquisitionsPage() {
       </div>
 
       {/* ── My Watchlist table ── */}
-      <div className="card" style={{ overflow: 'hidden', marginBottom: 28 }}>
+      <div className="card" style={{ marginBottom: 28 }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2 style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)' }}>My Watchlist</h2>
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{WATCHLIST.length} businesses</span>
         </div>
+        <div className="table-scroll">
         <table className="data-table">
           <thead>
             <tr><th>Company</th><th>Category</th><th>Asking</th><th>MRR</th><th>Profit</th><th>Multiple</th><th>Status</th><th>Notes</th></tr>
@@ -108,6 +109,7 @@ export default function AcquisitionsPage() {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* ── TrustMRR Available for Sale ── */}
@@ -131,7 +133,7 @@ export default function AcquisitionsPage() {
           </a>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        <div className="grid-cols-3">
           {TRUSTMRR_LISTINGS.map((l, i) => (
             <div key={i} className="card" style={{ padding: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>

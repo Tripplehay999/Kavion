@@ -14,9 +14,35 @@ const MOCK_IDEAS = [
   { id: 'mock-i8', title: 'Open Source to SaaS',     description: 'Identifies under-monetised OSS projects and packages them as SaaS',                  status: 'exploring', score: 6,  tags: ['OSS', 'SaaS'],                   created_at: '3w ago' },
 ]
 
+const VALID_STATUSES = ['exploring', 'validated', 'building', 'launched', 'shelved'] as const
+
 function isConfigured() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
   return url.length > 0 && !url.includes('your-project-id')
+}
+
+// ── Validation ────────────────────────────────────────────────────────────────
+function validateIdea(input: {
+  title?: string; description?: string; score?: number; status?: string; tags?: string[]
+}) {
+  if (input.title !== undefined) {
+    if (!input.title || input.title.trim().length === 0) throw new Error('Title is required')
+    if (input.title.length > 200) throw new Error('Title must be 200 characters or fewer')
+  }
+  if (input.description !== undefined && input.description.length > 2000)
+    throw new Error('Description must be 2000 characters or fewer')
+  if (input.score !== undefined) {
+    const s = Number(input.score)
+    if (!Number.isInteger(s) || s < 1 || s > 10) throw new Error('Score must be 1–10')
+  }
+  if (input.status !== undefined && !VALID_STATUSES.includes(input.status as typeof VALID_STATUSES[number]))
+    throw new Error('Invalid status')
+  if (input.tags !== undefined) {
+    if (input.tags.length > 15) throw new Error('Maximum 15 tags allowed')
+    for (const tag of input.tags) {
+      if (typeof tag !== 'string' || tag.length > 40) throw new Error('Each tag must be 40 characters or fewer')
+    }
+  }
 }
 
 export async function getIdeas() {
@@ -38,16 +64,17 @@ export async function addIdea(input: {
   title: string; description?: string; score?: number; status?: string; tags?: string[]
 }) {
   if (!isConfigured()) throw new Error('Configure Supabase to save ideas')
+  validateIdea(input)
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     const { data, error } = await supabase
       .from('ideas')
-      .insert({ user_id: user.id, ...input })
+      .insert({ user_id: user.id, ...input, title: input.title.trim() })
       .select()
       .single()
-    if (error) throw new Error(error.message)
+    if (error) throw new Error('Failed to add idea')
     revalidatePath('/ideas')
     return data as { id: string; title: string; description?: string; score: number; status: string; tags: string[]; created_at: string }
   } catch (e) {
@@ -59,12 +86,14 @@ export async function updateIdea(id: string, input: {
   title?: string; description?: string; score?: number; status?: string; tags?: string[]
 }) {
   if (!isConfigured()) throw new Error('Configure Supabase to update ideas')
+  if (!id || typeof id !== 'string') throw new Error('Invalid idea ID')
+  validateIdea(input)
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     const { error } = await supabase.from('ideas').update(input).eq('id', id).eq('user_id', user.id)
-    if (error) throw new Error(error.message)
+    if (error) throw new Error('Failed to update idea')
     revalidatePath('/ideas')
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to update idea')
@@ -73,12 +102,13 @@ export async function updateIdea(id: string, input: {
 
 export async function deleteIdea(id: string) {
   if (!isConfigured()) throw new Error('Configure Supabase to delete ideas')
+  if (!id || typeof id !== 'string') throw new Error('Invalid idea ID')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     const { error } = await supabase.from('ideas').delete().eq('id', id).eq('user_id', user.id)
-    if (error) throw new Error(error.message)
+    if (error) throw new Error('Failed to delete idea')
     revalidatePath('/ideas')
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to delete idea')

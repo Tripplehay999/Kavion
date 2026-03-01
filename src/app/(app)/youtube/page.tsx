@@ -101,7 +101,7 @@ export default async function YouTubePage() {
       )}
 
       {/* ── Channel Stats ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 22 }}>
+      <div className="grid-cols-4" style={{ marginBottom: 22 }}>
         {[
           { label: 'Subscribers', value: `${(CHANNEL.subscribers / 1000).toFixed(1)}k`, icon: Users,   color: '#EF4444', sub: isYtConfigured ? 'Live'       : '+340 this month' },
           { label: 'Total Views',  value: `${(CHANNEL.views / 1000).toFixed(0)}k`,      icon: Eye,     color: '#F87171', sub: isYtConfigured ? 'All time'   : '+28%'           },

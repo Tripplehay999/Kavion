@@ -53,6 +53,30 @@ function isConfigured() {
   return url.length > 0 && !url.includes('your-project-id')
 }
 
+// ── Validation ────────────────────────────────────────────────────────────────
+function validateSnippet(input: {
+  title?: string; description?: string; code?: string; language?: string; tags?: string[]
+}) {
+  if (input.title !== undefined) {
+    if (!input.title || input.title.trim().length === 0) throw new Error('Title is required')
+    if (input.title.length > 200) throw new Error('Title must be 200 characters or fewer')
+  }
+  if (input.description !== undefined && input.description.length > 1000)
+    throw new Error('Description must be 1000 characters or fewer')
+  if (input.code !== undefined) {
+    if (!input.code || input.code.trim().length === 0) throw new Error('Code is required')
+    if (input.code.length > 100_000) throw new Error('Code must be 100,000 characters or fewer')
+  }
+  if (input.language !== undefined && input.language.length > 40)
+    throw new Error('Language must be 40 characters or fewer')
+  if (input.tags !== undefined) {
+    if (input.tags.length > 15) throw new Error('Maximum 15 tags allowed')
+    for (const tag of input.tags) {
+      if (typeof tag !== 'string' || tag.length > 40) throw new Error('Each tag must be 40 characters or fewer')
+    }
+  }
+}
+
 export async function getSnippets(language?: string) {
   if (!isConfigured()) return MOCK_SNIPPETS
   try {
@@ -73,13 +97,16 @@ export async function getSnippets(language?: string) {
 export async function addSnippet(input: {
   title: string; description?: string; code: string; language: string; tags?: string[]
 }) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to save snippets')
+  if (!isConfigured()) throw new Error('Configure Supabase to save snippets')
+  validateSnippet(input)
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
-    const { error } = await supabase.from('snippets').insert({ user_id: user.id, ...input })
-    if (error) throw new Error(error.message)
+    const { error } = await supabase.from('snippets').insert({
+      user_id: user.id, ...input, title: input.title.trim(),
+    })
+    if (error) throw new Error('Failed to add snippet')
     revalidatePath('/snippets')
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to add snippet')
@@ -89,13 +116,15 @@ export async function addSnippet(input: {
 export async function updateSnippet(id: string, input: {
   title?: string; description?: string; code?: string; language?: string; tags?: string[]
 }) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to update snippets')
+  if (!isConfigured()) throw new Error('Configure Supabase to update snippets')
+  if (!id || typeof id !== 'string') throw new Error('Invalid snippet ID')
+  validateSnippet(input)
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     const { error } = await supabase.from('snippets').update(input).eq('id', id).eq('user_id', user.id)
-    if (error) throw new Error(error.message)
+    if (error) throw new Error('Failed to update snippet')
     revalidatePath('/snippets')
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to update snippet')
@@ -103,13 +132,14 @@ export async function updateSnippet(id: string, input: {
 }
 
 export async function deleteSnippet(id: string) {
-  if (!isConfigured()) throw new Error('Configure Supabase in .env.local to delete snippets')
+  if (!isConfigured()) throw new Error('Configure Supabase to delete snippets')
+  if (!id || typeof id !== 'string') throw new Error('Invalid snippet ID')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     const { error } = await supabase.from('snippets').delete().eq('id', id).eq('user_id', user.id)
-    if (error) throw new Error(error.message)
+    if (error) throw new Error('Failed to delete snippet')
     revalidatePath('/snippets')
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to delete snippet')

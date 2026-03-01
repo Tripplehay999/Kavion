@@ -16,6 +16,14 @@ function isConfigured() {
   return url.length > 0 && !url.includes('your-project-id')
 }
 
+// ── Validation ────────────────────────────────────────────────────────────────
+function validateHabit(name: string, color: string) {
+  if (!name || typeof name !== 'string') throw new Error('Name is required')
+  if (name.trim().length === 0) throw new Error('Name cannot be empty')
+  if (name.length > 120) throw new Error('Name must be 120 characters or fewer')
+  if (!/^#[0-9a-fA-F]{6}$/.test(color)) throw new Error('Invalid color format')
+}
+
 export async function getHabitsWithToday() {
   if (!isConfigured()) return MOCK_HABITS
   try {
@@ -66,6 +74,7 @@ export async function getAllHabitsWithLogs(days = 28) {
 
 export async function toggleHabit(habitId: string) {
   if (!isConfigured()) throw new Error('Configure Supabase to track habits')
+  if (!habitId || typeof habitId !== 'string') throw new Error('Invalid habit ID')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -94,16 +103,17 @@ export async function toggleHabit(habitId: string) {
 
 export async function addHabit(name: string, color = '#EC4899') {
   if (!isConfigured()) throw new Error('Configure Supabase to add habits')
+  validateHabit(name, color)
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     const { data, error } = await supabase
       .from('habits')
-      .insert({ user_id: user.id, name, color })
+      .insert({ user_id: user.id, name: name.trim(), color })
       .select()
       .single()
-    if (error) throw new Error(error.message)
+    if (error) throw new Error('Failed to add habit')
     revalidatePath('/habits')
     revalidatePath('/dashboard')
     return data as { id: string; name: string; color: string; sort_order: number; created_at: string }
@@ -114,12 +124,13 @@ export async function addHabit(name: string, color = '#EC4899') {
 
 export async function deleteHabit(id: string) {
   if (!isConfigured()) throw new Error('Configure Supabase to delete habits')
+  if (!id || typeof id !== 'string') throw new Error('Invalid habit ID')
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     const { error } = await supabase.from('habits').delete().eq('id', id).eq('user_id', user.id)
-    if (error) throw new Error(error.message)
+    if (error) throw new Error('Failed to delete habit')
     revalidatePath('/habits')
     revalidatePath('/dashboard')
   } catch (e) {

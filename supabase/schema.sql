@@ -219,3 +219,16 @@ ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Own settings" ON user_settings FOR ALL USING (auth.uid() = user_id);
 CREATE INDEX idx_user_settings_user ON user_settings(user_id);
 CREATE TRIGGER trg_user_settings_ua BEFORE UPDATE ON user_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- ── User Profiles ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS user_profiles (
+  id           uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  display_name text,
+  bio          text,
+  avatar_color text DEFAULT '#7C3AED',
+  created_at   timestamptz DEFAULT now(),
+  updated_at   timestamptz DEFAULT now()
+);
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Own profile" ON user_profiles FOR ALL USING (auth.uid() = id);
+CREATE TRIGGER trg_user_profiles_ua BEFORE UPDATE ON user_profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at();

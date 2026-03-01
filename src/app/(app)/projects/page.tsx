@@ -45,7 +45,7 @@ export default async function ProjectsPage({
       </div>
 
       {/* ── Stats ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 22 }}>
+      <div className="grid-cols-4" style={{ marginBottom: 22 }}>
         {[
           { label: 'Total Projects', value: String(projects.length), color: '#3B82F6' },
           { label: 'Active',         value: String(active),          color: '#22C55E' },

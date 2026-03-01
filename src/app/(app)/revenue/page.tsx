@@ -75,7 +75,7 @@ export default async function RevenuePage() {
       </div>
 
       {/* ── KPI cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 22 }}>
+      <div className="grid-cols-4" style={{ marginBottom: 22 }}>
         {[
           { label: 'MRR',     value: `$${mrr.toLocaleString()}`,  sub: isStripeLive ? 'Live from Stripe' : `+${growth}% MoM`,   color: '#10B981', trend: 'up', live: isStripeLive },
           { label: 'ARR',     value: `$${arr.toLocaleString()}`,  sub: 'Annualised',                                             color: '#10B981', trend: null, live: false },
@@ -112,7 +112,7 @@ export default async function RevenuePage() {
         <MrrChart data={chartData} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 16 }}>
+      <div className="revenue-grid">
 
         {/* ── Revenue Sources (interactive) ── */}
         <RevenueSourcesClient initialSources={sources} isLive={live} />

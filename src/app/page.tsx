@@ -129,7 +129,8 @@ export default function HomePage() {
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+          {/* Hidden on mobile */}
+          <div className="landing-nav-links">
             {[['Features', '#features'], ['How it Works', '#how'], ['Why', '#why'], ['Stack', '#stack']].map(([l, h]) => (
               <a key={h} href={h} style={{ fontSize: 13.5, color: 'var(--text-secondary)', textDecoration: 'none' }}>
                 {l}
@@ -168,11 +169,8 @@ export default function HomePage() {
           <div style={{ position: 'absolute', top: '20%', right: '-10%', width: 500, height: 500, background: 'radial-gradient(ellipse, rgba(6,182,212,0.055) 0%, transparent 65%)', borderRadius: '50%' }} />
         </div>
 
-        <div className="landing-container" style={{
-          padding: '96px 32px 108px',
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
-          gap: 80, alignItems: 'center', position: 'relative', zIndex: 1,
-        }}>
+        {/* hero-grid handles padding + 2-col layout, collapses to 1-col on mobile */}
+        <div className="landing-container hero-grid">
 
           {/* ── Left: Copy ── */}
           <div>
@@ -182,7 +180,7 @@ export default function HomePage() {
               <span style={{ background: 'var(--violet)', color: '#fff', fontSize: 10, padding: '1px 7px', borderRadius: 99, fontWeight: 700, letterSpacing: '0.05em' }}>BETA</span>
             </div>
 
-            <h1 className="hero-headline" style={{ fontSize: 60, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1.04, marginBottom: 24 }}>
+            <h1 className="hero-headline hero-h1">
               Run Your<br />Entire Life<br />From One Tab
             </h1>
 
@@ -190,7 +188,7 @@ export default function HomePage() {
               Projects, revenue, habits, ideas, servers, acquisitions, snippets, YouTube — every part of your operation tracked, measured, and optimized from one premium dashboard.
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 36 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 36, flexWrap: 'wrap' }}>
               <Link href="/signup" className="btn btn-primary" style={{ fontSize: 15, padding: '11px 24px', boxShadow: '0 0 32px rgba(124,58,237,0.4)' }}>
                 Start for Free <ArrowRight size={15} />
               </Link>
@@ -213,8 +211,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* ── Right: Dashboard Mockup ── */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+          {/* ── Right: Dashboard Mockup — hidden on mobile ── */}
+          <div className="hero-mockup-wrap">
             <div style={{
               position: 'absolute', inset: -80, pointerEvents: 'none',
               background: 'radial-gradient(ellipse 75% 65% at 55% 50%, rgba(124,58,237,0.14) 0%, transparent 70%)',
@@ -325,7 +323,7 @@ export default function HomePage() {
       </section>
 
       {/* ══ PROBLEM SECTION ══════════════════════════════ */}
-      <section style={{ borderTop: '1px solid var(--border)', padding: '92px 32px', background: 'rgba(255,255,255,0.008)' }}>
+      <section className="landing-section" style={{ borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.008)' }}>
         <div className="landing-container">
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <div style={{
@@ -344,7 +342,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, maxWidth: 780, margin: '0 auto 52px' }}>
+          {/* 4-col → 2-col on mobile */}
+          <div className="tools-grid">
             {SCATTERED_TOOLS.map((tool, i) => (
               <div key={i} style={{
                 background: tool.bg,
@@ -384,20 +383,20 @@ export default function HomePage() {
       </section>
 
       {/* ══ METRICS BAR ═══════════════════════════════════ */}
-      <section style={{ borderTop: '1px solid var(--border)', padding: '72px 32px' }}>
+      <section className="landing-section-sm" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="landing-container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
+          {/* 4-col → 2-col on mobile */}
+          <div className="metrics-grid">
             {[
               { num: '9',  label: 'Modules',       sub: 'wired together',      color: '#A78BFA' },
               { num: '0',  label: 'Tab Switches',   sub: 'needed per morning',  color: '#34D399' },
               { num: '1',  label: 'Codebase',       sub: 'to rule them all',    color: '#60A5FA' },
               { num: '∞',  label: 'Leverage',       sub: 'from compounding',    color: '#FBBF24' },
             ].map((m, i) => (
-              <div key={i} style={{
-                textAlign: 'center', padding: '32px 24px',
+              <div key={i} className="metrics-cell" style={{
                 borderRight: i < 3 ? '1px solid var(--border)' : 'none',
               }}>
-                <div className="num" style={{ fontSize: 64, fontWeight: 800, color: m.color, letterSpacing: '-0.05em', lineHeight: 1, marginBottom: 10 }}>
+                <div className="metrics-num" style={{ color: m.color }}>
                   {m.num}
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{m.label}</div>
@@ -409,7 +408,7 @@ export default function HomePage() {
       </section>
 
       {/* ══ FEATURES ══════════════════════════════════════ */}
-      <section id="features" style={{ borderTop: '1px solid var(--border)', padding: '92px 32px', background: 'rgba(255,255,255,0.008)' }}>
+      <section id="features" className="landing-section" style={{ borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.008)' }}>
         <div className="landing-container">
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <div style={{
@@ -428,7 +427,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+          {/* 3-col → 2-col → 1-col on smaller screens */}
+          <div className="features-grid">
             {FEATURES.map((f) => (
               <div key={f.name} className="feature-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
@@ -448,7 +448,7 @@ export default function HomePage() {
       </section>
 
       {/* ══ HOW IT WORKS ══════════════════════════════════ */}
-      <section id="how" style={{ borderTop: '1px solid var(--border)', padding: '92px 32px' }}>
+      <section id="how" className="landing-section" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="landing-container">
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <div style={{
@@ -464,8 +464,9 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24, position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 40, left: '18%', right: '18%', height: 1, background: 'linear-gradient(to right, rgba(124,58,237,0.4), rgba(59,130,246,0.4), rgba(16,185,129,0.4))', zIndex: 0 }} />
+          {/* 3-col → 1-col on mobile, connector line hidden on mobile */}
+          <div className="steps-grid">
+            <div className="steps-connector" />
             {[
               { num: '01', icon: Zap,       color: '#7C3AED', title: 'Sign up & connect',    desc: 'Create your account and add your Supabase credentials. Your data lives in your own database — Kavion never touches it.' },
               { num: '02', icon: Layers,    color: '#3B82F6', title: 'Populate your OS',     desc: 'Add projects, log habits, record revenue streams, save snippets. Every module works independently or as one system.' },
@@ -487,7 +488,7 @@ export default function HomePage() {
       </section>
 
       {/* ══ WHY ═══════════════════════════════════════════ */}
-      <section id="why" style={{ borderTop: '1px solid var(--border)', padding: '92px 32px', background: 'rgba(255,255,255,0.008)' }}>
+      <section id="why" className="landing-section" style={{ borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.008)' }}>
         <div className="landing-container">
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <h2 style={{ fontSize: 42, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--text-primary)', marginBottom: 12, lineHeight: 1.1 }}>
@@ -495,7 +496,9 @@ export default function HomePage() {
             </h2>
             <p style={{ fontSize: 16, color: 'var(--text-secondary)' }}>Not just a dashboard — a forcing function that makes you better.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+
+          {/* 3-col → 1-col on mobile */}
+          <div className="why-grid">
             {[
               { num: '01', icon: GitBranch, color: '#7C3AED', title: 'Architect properly',  desc: 'Designing Kavion forces you to think about data models, relationships, and system design before you build a single feature. That thinking transfers everywhere.' },
               { num: '02', icon: Cpu,       color: '#3B82F6', title: 'Build real backend',  desc: 'Every module connects to Supabase. Real auth, real database, real queries — not toys. Row-level security, real-time subscriptions, production-grade from day one.' },
@@ -564,19 +567,19 @@ export default function HomePage() {
       </section>
 
       {/* ══ CTA BANNER ════════════════════════════════════ */}
-      <section style={{ borderTop: '1px solid var(--border)', padding: '108px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section className="cta-section" style={{ borderTop: '1px solid var(--border)' }}>
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 65% 75% at 50% 50%, rgba(124,58,237,0.09) 0%, transparent 70%)' }} />
         <div className="landing-container" style={{ maxWidth: 620, position: 'relative', zIndex: 1 }}>
           <div style={{ width: 62, height: 62, background: 'linear-gradient(135deg, #7C3AED, #A78BFA)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', boxShadow: '0 0 56px rgba(124,58,237,0.55)' }}>
             <Zap size={28} color="#fff" strokeWidth={2.5} />
           </div>
-          <h2 style={{ fontSize: 50, fontWeight: 800, letterSpacing: '-0.045em', color: 'var(--text-primary)', marginBottom: 16, lineHeight: 1.06 }}>
+          <h2 className="cta-h2">
             Start building your<br />command center today
           </h2>
           <p style={{ fontSize: 17, color: 'var(--text-secondary)', marginBottom: 40, lineHeight: 1.65 }}>
             One dashboard. Nine modules. Zero excuses.<br />Your personal OS is waiting.
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
             <Link href="/signup" className="btn btn-primary" style={{ fontSize: 15.5, padding: '13px 30px', boxShadow: '0 0 40px rgba(124,58,237,0.5)', display: 'inline-flex' }}>
               Get Started Free <ArrowRight size={16} />
             </Link>
@@ -590,19 +593,22 @@ export default function HomePage() {
 
       {/* ══ FOOTER ════════════════════════════════════════ */}
       <footer style={{ borderTop: '1px solid var(--border)', padding: '28px 32px' }}>
-        <div className="landing-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 22, height: 22, background: 'linear-gradient(135deg, #7C3AED, #A78BFA)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={11} color="#fff" strokeWidth={2.5} />
+        <div className="landing-container">
+          <div className="landing-footer-inner">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 22, height: 22, background: 'linear-gradient(135deg, #7C3AED, #A78BFA)', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Zap size={11} color="#fff" strokeWidth={2.5} />
+              </div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-muted)' }}>KAVION</span>
             </div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-muted)' }}>KAVION</span>
+            {/* Hidden on mobile */}
+            <div className="landing-footer-links">
+              {[['Features', '#features'], ['How it Works', '#how'], ['Why', '#why'], ['Stack', '#stack']].map(([l, h]) => (
+                <a key={h} href={h} style={{ fontSize: 12.5, color: 'var(--text-muted)', textDecoration: 'none' }}>{l}</a>
+              ))}
+            </div>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Your Personal OS · Next.js + Supabase</span>
           </div>
-          <div style={{ display: 'flex', gap: 24 }}>
-            {[['Features', '#features'], ['How it Works', '#how'], ['Why', '#why'], ['Stack', '#stack']].map(([l, h]) => (
-              <a key={h} href={h} style={{ fontSize: 12.5, color: 'var(--text-muted)', textDecoration: 'none' }}>{l}</a>
-            ))}
-          </div>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Your Personal OS · Next.js + Supabase</span>
         </div>
       </footer>
 

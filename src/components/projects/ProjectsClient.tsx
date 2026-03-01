@@ -183,7 +183,8 @@ export default function ProjectsClient({
       </div>
 
       {/* ── Table ── */}
-      <div className="card" style={{ overflow: 'hidden' }}>
+      <div className="card">
+        <div className="table-scroll">
         <table className="data-table">
           <thead>
             <tr>
@@ -273,6 +274,7 @@ export default function ProjectsClient({
             ))}
           </tbody>
         </table>
+        </div>
         {projects.length === 0 && (
           <div style={{ padding: '48px 0', textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
             No projects yet — click <strong style={{ color: 'var(--text-secondary)' }}>New Project</strong> to add one.

@@ -26,6 +26,30 @@ function isConfigured() {
   return url.length > 0 && !url.includes('your-project-id')
 }
 
+const VALID_TYPES   = ['SaaS', 'Consulting', 'Affiliate', 'Product', 'Freelance', 'Other']
+const VALID_STATUSES = ['active', 'inactive']
+
+function validateRevenueSource(input: {
+  name?: string; type?: string; mrr?: number; growth?: number; status?: string
+}) {
+  if (input.name !== undefined) {
+    if (!input.name || input.name.trim().length === 0) throw new Error('Name is required')
+    if (input.name.length > 120) throw new Error('Name must be 120 characters or fewer')
+  }
+  if (input.type !== undefined && !VALID_TYPES.includes(input.type))
+    throw new Error('Invalid type')
+  if (input.mrr !== undefined) {
+    const m = Number(input.mrr)
+    if (isNaN(m) || m < 0 || m > 10_000_000) throw new Error('MRR must be between 0 and 10,000,000')
+  }
+  if (input.growth !== undefined) {
+    const g = Number(input.growth)
+    if (isNaN(g) || g < -100 || g > 10_000) throw new Error('Growth must be between -100 and 10,000')
+  }
+  if (input.status !== undefined && !VALID_STATUSES.includes(input.status))
+    throw new Error('Invalid status')
+}
+
 export async function getRevenueSources() {
   if (!isConfigured()) return MOCK_SOURCES
   const supabase = await createClient()
@@ -55,11 +79,14 @@ export async function addRevenueSource(input: {
   name: string; type: string; mrr: number; growth?: number; status?: string
 }) {
   if (!isConfigured()) throw new Error('Supabase not configured')
+  validateRevenueSource(input)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
-  const { error } = await supabase.from('revenue_sources').insert({ user_id: user.id, ...input })
-  if (error) throw new Error(error.message)
+  const { error } = await supabase.from('revenue_sources').insert({
+    user_id: user.id, ...input, name: input.name.trim(),
+  })
+  if (error) throw new Error('Failed to add revenue source')
   revalidatePath('/revenue')
   revalidatePath('/dashboard')
 }
@@ -68,35 +95,44 @@ export async function updateRevenueSource(id: string, input: {
   name?: string; type?: string; mrr?: number; growth?: number; status?: string
 }) {
   if (!isConfigured()) throw new Error('Supabase not configured')
+  if (!id || typeof id !== 'string') throw new Error('Invalid ID')
+  validateRevenueSource(input)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
   const { error } = await supabase.from('revenue_sources').update(input).eq('id', id).eq('user_id', user.id)
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('Failed to update revenue source')
   revalidatePath('/revenue')
   revalidatePath('/dashboard')
 }
 
 export async function deleteRevenueSource(id: string) {
   if (!isConfigured()) throw new Error('Supabase not configured')
+  if (!id || typeof id !== 'string') throw new Error('Invalid ID')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
   const { error } = await supabase.from('revenue_sources').delete().eq('id', id).eq('user_id', user.id)
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('Failed to delete revenue source')
   revalidatePath('/revenue')
   revalidatePath('/dashboard')
 }
 
 export async function logMonthlyMrr(month: string, total_mrr: number, expenses = 0, notes?: string) {
   if (!isConfigured()) throw new Error('Supabase not configured')
+  if (!month || typeof month !== 'string' || month.length > 20) throw new Error('Invalid month')
+  const m = Number(total_mrr)
+  if (isNaN(m) || m < 0 || m > 10_000_000) throw new Error('MRR must be between 0 and 10,000,000')
+  const e = Number(expenses)
+  if (isNaN(e) || e < 0 || e > 10_000_000) throw new Error('Expenses must be between 0 and 10,000,000')
+  if (notes !== undefined && notes.length > 2000) throw new Error('Notes must be 2000 characters or fewer')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
   const { error } = await supabase.from('revenue_entries').upsert({
     user_id: user.id, month, total_mrr, expenses, notes,
   }, { onConflict: 'user_id,month' })
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('Failed to log MRR')
   revalidatePath('/revenue')
 }
 

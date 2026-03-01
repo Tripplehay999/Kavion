@@ -49,6 +49,11 @@ export async function saveSettings(settings: Record<string, string>) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
+  for (const [key, value] of Object.entries(settings)) {
+    if (typeof key !== 'string' || key.length > 60) throw new Error(`Key "${key}" must be 60 characters or fewer`)
+    if (typeof value !== 'string' || value.length > 2000) throw new Error(`Value for "${key}" must be 2000 characters or fewer`)
+  }
+
   const rows = Object.entries(settings)
     .filter(([, v]) => v.trim().length > 0)
     .map(([key, value]) => ({ user_id: user.id, key, value: value.trim() }))
@@ -59,7 +64,7 @@ export async function saveSettings(settings: Record<string, string>) {
     .from('user_settings')
     .upsert(rows, { onConflict: 'user_id,key' })
 
-  if (error) throw new Error(error.message)
+  if (error) throw new Error('Failed to save settings')
   revalidatePath('/settings')
   revalidatePath('/youtube')
   revalidatePath('/revenue')

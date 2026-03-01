@@ -8,9 +8,13 @@ import Sidebar from './Sidebar'
 export default function AppShellClient({
   children,
   userEmail,
+  displayName,
+  avatarColor,
 }: {
   children: React.ReactNode
   userEmail: string
+  displayName?: string | null
+  avatarColor?: string
 }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
@@ -25,7 +29,7 @@ export default function AppShellClient({
         <div className="sidebar-backdrop" onClick={() => setOpen(false)} />
       )}
 
-      <Sidebar userEmail={userEmail} mobileOpen={open} onMobileClose={() => setOpen(false)} />
+      <Sidebar userEmail={userEmail} displayName={displayName} avatarColor={avatarColor} mobileOpen={open} onMobileClose={() => setOpen(false)} />
 
       <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Mobile top bar */}

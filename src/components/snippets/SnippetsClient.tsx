@@ -180,7 +180,7 @@ export default function SnippetsClient({
             : 'No snippets match your filter.'}
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <div className="grid-cols-2">
           {filtered.map((s) => {
             const lc = LANG_COLOR[s.language] ?? { bg: 'rgba(100,116,139,0.12)', color: '#94A3B8' }
             return (

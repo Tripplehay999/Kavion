@@ -155,7 +155,7 @@ export default function ServersClient({
       </div>
 
       {/* ── Overview cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 22 }}>
+      <div className="grid-cols-4" style={{ marginBottom: 22 }}>
         {[
           { label: 'Online',    value: online,   color: '#22C55E', status: 'online'   },
           { label: 'Degraded',  value: degraded, color: '#FBBF24', status: 'degraded' },
@@ -194,6 +194,7 @@ export default function ServersClient({
             No servers yet — click <strong style={{ color: 'var(--text-secondary)' }}>Add Server</strong> to start monitoring.
           </div>
         ) : (
+          <div className="table-scroll">
           <table className="data-table">
             <thead>
               <tr>
@@ -288,6 +289,7 @@ export default function ServersClient({
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
