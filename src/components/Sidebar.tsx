@@ -20,29 +20,32 @@ import {
   X,
 } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
+import type { NavCounts } from '@/app/actions/nav'
 
 const NAV = [
-  { href: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard',    color: '#7C3AED', count: null },
-  { href: '/projects',     icon: FolderKanban,    label: 'Projects',     color: '#3B82F6', count: 6    },
-  { href: '/revenue',      icon: TrendingUp,      label: 'Revenue',      color: '#10B981', count: null },
-  { href: '/ideas',        icon: Lightbulb,       label: 'Ideas',        color: '#F59E0B', count: 12   },
-  { href: '/habits',       icon: Target,          label: 'Habits',       color: '#EC4899', count: null },
-  { href: '/snippets',     icon: Code2,           label: 'Snippets',     color: '#06B6D4', count: 34   },
-  { href: '/acquisitions', icon: Building2,       label: 'Acquisitions', color: '#F97316', count: null },
-  { href: '/servers',      icon: Server,          label: 'Servers',      color: '#22C55E', count: 9    },
-  { href: '/youtube',      icon: Youtube,         label: 'YouTube',      color: '#EF4444', count: null },
+  { href: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard',    color: '#7C3AED', countKey: null        },
+  { href: '/projects',     icon: FolderKanban,    label: 'Projects',     color: '#3B82F6', countKey: 'projects'  },
+  { href: '/revenue',      icon: TrendingUp,      label: 'Revenue',      color: '#10B981', countKey: null        },
+  { href: '/ideas',        icon: Lightbulb,       label: 'Ideas',        color: '#F59E0B', countKey: 'ideas'     },
+  { href: '/habits',       icon: Target,          label: 'Habits',       color: '#EC4899', countKey: 'habits'    },
+  { href: '/snippets',     icon: Code2,           label: 'Snippets',     color: '#06B6D4', countKey: 'snippets'  },
+  { href: '/acquisitions', icon: Building2,       label: 'Acquisitions', color: '#F97316', countKey: null        },
+  { href: '/servers',      icon: Server,          label: 'Servers',      color: '#22C55E', countKey: 'servers'   },
+  { href: '/youtube',      icon: Youtube,         label: 'YouTube',      color: '#EF4444', countKey: null        },
 ]
 
 export default function Sidebar({
   userEmail,
   displayName,
   avatarColor = '#7C3AED',
+  navCounts,
   mobileOpen = false,
   onMobileClose,
 }: {
   userEmail: string
   displayName?: string | null
   avatarColor?: string
+  navCounts?: NavCounts
   mobileOpen?: boolean
   onMobileClose?: () => void
 }) {
@@ -93,8 +96,9 @@ export default function Sidebar({
 
       {/* ── Nav ── */}
       <nav style={{ flex: 1, padding: '4px 0', overflowY: 'auto' }}>
-        {NAV.map(({ href, icon: Icon, label, color, count }) => {
+        {NAV.map(({ href, icon: Icon, label, color, countKey }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
+          const count = countKey ? (navCounts?.[countKey as keyof NavCounts] ?? 0) : null
           return (
             <Link
               key={href}
@@ -107,7 +111,7 @@ export default function Sidebar({
                 style={{ color: active ? color : 'currentColor', flexShrink: 0 }}
               />
               <span style={{ flex: 1 }}>{label}</span>
-              {count !== null && (
+              {count !== null && count > 0 && (
                 <span style={{
                   fontSize: 11,
                   fontFamily: 'var(--font-mono)',

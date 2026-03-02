@@ -4,17 +4,20 @@ import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, Zap } from 'lucide-react'
 import Sidebar from './Sidebar'
+import type { NavCounts } from '@/app/actions/nav'
 
 export default function AppShellClient({
   children,
   userEmail,
   displayName,
   avatarColor,
+  navCounts,
 }: {
   children: React.ReactNode
   userEmail: string
   displayName?: string | null
   avatarColor?: string
+  navCounts?: NavCounts
 }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
@@ -29,7 +32,7 @@ export default function AppShellClient({
         <div className="sidebar-backdrop" onClick={() => setOpen(false)} />
       )}
 
-      <Sidebar userEmail={userEmail} displayName={displayName} avatarColor={avatarColor} mobileOpen={open} onMobileClose={() => setOpen(false)} />
+      <Sidebar userEmail={userEmail} displayName={displayName} avatarColor={avatarColor} navCounts={navCounts} mobileOpen={open} onMobileClose={() => setOpen(false)} />
 
       <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Mobile top bar */}

@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { CheckCircle2, AlertCircle, Loader2, User, Lock, Info } from 'lucide-react'
 import { updateProfile, changePassword } from '@/app/actions/profile'
 import type { UserProfile } from '@/app/actions/profile'
+import { actionError } from '@/lib/utils/actionError'
 
 const AVATAR_COLORS = [
   '#7C3AED', '#3B82F6', '#10B981', '#F59E0B',
@@ -52,7 +53,7 @@ export default function ProfileClient({ profile, email, memberSince }: Props) {
         await updateProfile({ display_name: displayName, bio, avatar_color: avatarColor })
         setProfileMsg({ ok: true, text: 'Profile saved' })
       } catch (e) {
-        setProfileMsg({ ok: false, text: e instanceof Error ? e.message : 'Failed to save' })
+        setProfileMsg({ ok: false, text: actionError(e, 'Failed to save profile — please try again') })
       }
     })
   }
@@ -70,7 +71,7 @@ export default function ProfileClient({ profile, email, memberSince }: Props) {
         setNewPwd('')
         setConfirmPwd('')
       } catch (e) {
-        setPwdMsg({ ok: false, text: e instanceof Error ? e.message : 'Failed to update password' })
+        setPwdMsg({ ok: false, text: actionError(e, 'Failed to update password — please try again') })
       }
     })
   }
