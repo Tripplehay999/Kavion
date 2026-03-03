@@ -4,6 +4,7 @@ import { getHabitsWithToday, getHabitStreak } from '@/app/actions/habits'
 import { getRecentProjects, getProjectStats } from '@/app/actions/projects'
 import { getTotalMrr } from '@/app/actions/revenue'
 import { getServers } from '@/app/actions/servers'
+import { getRecentActivity } from '@/app/actions/activity'
 import HabitsWidget from '@/components/dashboard/HabitsWidget'
 
 function isConfigured() {
@@ -11,24 +12,17 @@ function isConfigured() {
   return url.length > 0 && !url.includes('your-project-id')
 }
 
-const MOCK_ACTIVITY = [
-  { text: 'Revenue API reached 72% completion',     time: '2h ago', dot: '#3B82F6' },
-  { text: 'Server prod-02 response time spiked',    time: '4h ago', dot: '#FBBF24' },
-  { text: 'New idea added: "AI Changelog Writer"',  time: '6h ago', dot: '#F59E0B' },
-  { text: 'Snippet: useDebounce hook saved',         time: '1d ago', dot: '#06B6D4' },
-  { text: 'Acquired watchlist: Pika.style added',   time: '2d ago', dot: '#F97316' },
-]
-
 export default async function DashboardPage() {
   const live = isConfigured()
 
-  const [habits, projects, mrrData, servers, streak, projectStats] = await Promise.all([
+  const [habits, projects, mrrData, servers, streak, projectStats, activity] = await Promise.all([
     getHabitsWithToday(),
     getRecentProjects(4),
     getTotalMrr(),
     getServers(),
     getHabitStreak(),
     getProjectStats(),
+    getRecentActivity(10),
   ])
 
   const onlineServers = servers.filter(s => s.status === 'online').length
@@ -131,8 +125,12 @@ export default async function DashboardPage() {
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Last 48h</span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {MOCK_ACTIVITY.map((a, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '11px 20px', borderBottom: i < MOCK_ACTIVITY.length - 1 ? '1px solid var(--border)' : 'none' }}>
+          {activity.length === 0 ? (
+            <div style={{ padding: '20px', textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
+              No activity yet — start adding projects, ideas, or habits.
+            </div>
+          ) : activity.map((a, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '11px 20px', borderBottom: i < activity.length - 1 ? '1px solid var(--border)' : 'none' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: a.dot, boxShadow: `0 0 6px ${a.dot}`, flexShrink: 0 }} />
               <span style={{ flex: 1, fontSize: 13, color: 'var(--text-secondary)' }}>{a.text}</span>
               <span style={{ fontSize: 11.5, color: 'var(--text-muted)', flexShrink: 0, fontFamily: 'var(--font-mono)' }}>{a.time}</span>
