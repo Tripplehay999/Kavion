@@ -18,12 +18,14 @@ import {
   LogOut,
   Loader2,
   X,
+  ListTodo,
 } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 import type { NavCounts } from '@/app/actions/nav'
 
 const NAV = [
   { href: '/dashboard',    icon: LayoutDashboard, label: 'Dashboard',    color: '#7C3AED', countKey: null        },
+  { href: '/tasks',        icon: ListTodo,        label: 'Tasks',        color: '#8B5CF6', countKey: 'todos'     },
   { href: '/projects',     icon: FolderKanban,    label: 'Projects',     color: '#3B82F6', countKey: 'projects'  },
   { href: '/revenue',      icon: TrendingUp,      label: 'Revenue',      color: '#10B981', countKey: null        },
   { href: '/ideas',        icon: Lightbulb,       label: 'Ideas',        color: '#F59E0B', countKey: 'ideas'     },

@@ -176,7 +176,7 @@ export default function HomePage() {
           <div>
             <div className="hero-badge">
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#A78BFA', boxShadow: '0 0 8px #8B5CF6', display: 'inline-block', flexShrink: 0 }} />
-              Personal OS for Founders &amp; Builders
+              Personal Cockpit for Founders &amp; Builders
               <span style={{ background: 'var(--violet)', color: '#fff', fontSize: 10, padding: '1px 7px', borderRadius: 99, fontWeight: 700, letterSpacing: '0.05em' }}>BETA</span>
             </div>
 
@@ -185,7 +185,7 @@ export default function HomePage() {
             </h1>
 
             <p style={{ fontSize: 17.5, lineHeight: 1.72, color: 'var(--text-secondary)', marginBottom: 38, maxWidth: 460 }}>
-              Projects, revenue, habits, ideas, servers, acquisitions, snippets, YouTube — every part of your operation tracked, measured, and optimized from one premium dashboard.
+              Projects, revenue, habits, ideas, servers, acquisitions, snippets, YouTube every part of your operation tracked, measured, and optimized from one premium dashboard.
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 36, flexWrap: 'wrap' }}>

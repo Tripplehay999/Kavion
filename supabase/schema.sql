@@ -232,3 +232,23 @@ CREATE TABLE IF NOT EXISTS user_profiles (
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Own profile" ON user_profiles FOR ALL USING (auth.uid() = id);
 CREATE TRIGGER trg_user_profiles_ua BEFORE UPDATE ON user_profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- ── Workspace Blocks (Notion-style block editor) ─────────────────────────────
+CREATE TABLE IF NOT EXISTS workspace_blocks (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  type       text NOT NULL DEFAULT 'text'
+             CHECK (type IN ('text','h1','h2','todo','bullet','numbered','code','divider','callout','quote')),
+  content    text DEFAULT '',
+  checked    boolean DEFAULT false,
+  language   text DEFAULT 'javascript',
+  sort_order integer DEFAULT 0,
+  color      text DEFAULT '#7C3AED',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+ALTER TABLE workspace_blocks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Own blocks" ON workspace_blocks FOR ALL USING (auth.uid() = user_id);
+CREATE INDEX idx_workspace_blocks_user ON workspace_blocks(user_id, sort_order);
+CREATE TRIGGER trg_workspace_blocks_ua BEFORE UPDATE ON workspace_blocks
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
