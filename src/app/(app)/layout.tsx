@@ -1,4 +1,9 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 import { createClient } from '@/lib/supabase/server'
 import { getProfile } from '@/app/actions/profile'
 import { getNavCounts } from '@/app/actions/nav'
